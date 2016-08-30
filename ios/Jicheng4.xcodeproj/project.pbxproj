@@ -29,9 +29,11 @@
 		7CFB7693820A46748888373B /* Comic Sans MS.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 71C2B6115780403389D6818F /* Comic Sans MS.ttf */; };
 		82CD8DBBEE534B47B1DDC810 /* Times New Roman.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A078C382C064E1D9C41CA49 /* Times New Roman.ttf */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
-		90A9B5A61D5D6ABE00D1FD64 /* CustomView.m in Sources */ = {isa = PBXBuildFile; fileRef = 90A9B5A51D5D6ABE00D1FD64 /* CustomView.m */; };
 		90A9B5B41D5D6AE800D1FD64 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90A9B5B31D5D6AE800D1FD64 /* QuartzCore.framework */; };
 		90A9B5B61D5D6AEF00D1FD64 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90A9B5B51D5D6AEF00D1FD64 /* UIKit.framework */; };
+		90D933A01D73D3AE005FD111 /* DrawView.m in Sources */ = {isa = PBXBuildFile; fileRef = 90D9339B1D73D3AE005FD111 /* DrawView.m */; };
+		90D933A11D73D3AE005FD111 /* RCTDrawView.m in Sources */ = {isa = PBXBuildFile; fileRef = 90D9339D1D73D3AE005FD111 /* RCTDrawView.m */; };
+		90D933A21D73D3AE005FD111 /* RCTDrawViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 90D9339F1D73D3AE005FD111 /* RCTDrawViewManager.m */; };
 		90F06AA61D5D90AA00AF3D08 /* libART.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 906E24501D5B009000333617 /* libART.a */; };
 		9D8C58517DDA4B14BF91EB96 /* Georgia.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 15DC542934174D20863E9DE1 /* Georgia.ttf */; };
 		A2507FB784F84769893B1347 /* Arial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A9D3FBEABD64BA89C3E8F99 /* Arial.ttf */; };
@@ -168,10 +170,14 @@
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		8864EF10F777477B8F11710F /* Roboto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Roboto.ttf; path = "../node_modules/native-base/Fonts/Roboto.ttf"; sourceTree = "<group>"; };
 		906E244B1D5B009000333617 /* ART.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ART.xcodeproj; path = "../node_modules/react-native/Libraries/ART/ART.xcodeproj"; sourceTree = "<group>"; };
-		90A9B5A41D5D6ABE00D1FD64 /* CustomView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomView.h; path = Jicheng4/CustomView.h; sourceTree = "<group>"; };
-		90A9B5A51D5D6ABE00D1FD64 /* CustomView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomView.m; path = Jicheng4/CustomView.m; sourceTree = "<group>"; };
 		90A9B5B31D5D6AE800D1FD64 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		90A9B5B51D5D6AEF00D1FD64 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		90D9339A1D73D3AE005FD111 /* DrawView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DrawView.h; path = Jicheng4/DrawView.h; sourceTree = "<group>"; };
+		90D9339B1D73D3AE005FD111 /* DrawView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DrawView.m; path = Jicheng4/DrawView.m; sourceTree = "<group>"; };
+		90D9339C1D73D3AE005FD111 /* RCTDrawView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTDrawView.h; path = Jicheng4/RCTDrawView.h; sourceTree = "<group>"; };
+		90D9339D1D73D3AE005FD111 /* RCTDrawView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTDrawView.m; path = Jicheng4/RCTDrawView.m; sourceTree = "<group>"; };
+		90D9339E1D73D3AE005FD111 /* RCTDrawViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTDrawViewManager.h; path = Jicheng4/RCTDrawViewManager.h; sourceTree = "<group>"; };
+		90D9339F1D73D3AE005FD111 /* RCTDrawViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTDrawViewManager.m; path = Jicheng4/RCTDrawViewManager.m; sourceTree = "<group>"; };
 		9CC7B4F126AE444C89CA49E9 /* Microsoft Sans Serif.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Microsoft Sans Serif.ttf"; path = "../node_modules/native-base/Fonts/Microsoft Sans Serif.ttf"; sourceTree = "<group>"; };
 		AEF4A56FE50B488DABE27840 /* SF-UI-Text-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-UI-Text-Regular.otf"; path = "../node_modules/native-base/Fonts/SF-UI-Text-Regular.otf"; sourceTree = "<group>"; };
 		C4C404C1AB5346C4BA9DE1B6 /* Skia.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Skia.ttf; path = "../node_modules/native-base/Fonts/Skia.ttf"; sourceTree = "<group>"; };
@@ -288,6 +294,7 @@
 		13B07FAE1A68108700A75B9A /* Jicheng4 */ = {
 			isa = PBXGroup;
 			children = (
+				90D9338D1D73D38F005FD111 /* DrawView */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -295,8 +302,6 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
-				90A9B5A41D5D6ABE00D1FD64 /* CustomView.h */,
-				90A9B5A51D5D6ABE00D1FD64 /* CustomView.m */,
 			);
 			name = Jicheng4;
 			sourceTree = "<group>";
@@ -401,6 +406,19 @@
 				906E24501D5B009000333617 /* libART.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		90D9338D1D73D38F005FD111 /* DrawView */ = {
+			isa = PBXGroup;
+			children = (
+				90D9339A1D73D3AE005FD111 /* DrawView.h */,
+				90D9339B1D73D3AE005FD111 /* DrawView.m */,
+				90D9339C1D73D3AE005FD111 /* RCTDrawView.h */,
+				90D9339D1D73D3AE005FD111 /* RCTDrawView.m */,
+				90D9339E1D73D3AE005FD111 /* RCTDrawViewManager.h */,
+				90D9339F1D73D3AE005FD111 /* RCTDrawViewManager.m */,
+			);
+			name = DrawView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -677,9 +695,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90D933A21D73D3AE005FD111 /* RCTDrawViewManager.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				90A9B5A61D5D6ABE00D1FD64 /* CustomView.m in Sources */,
+				90D933A01D73D3AE005FD111 /* DrawView.m in Sources */,
+				90D933A11D73D3AE005FD111 /* RCTDrawView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

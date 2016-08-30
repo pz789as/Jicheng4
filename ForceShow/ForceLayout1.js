@@ -32,9 +32,10 @@ import Dimensions from 'Dimensions';
 let ScreenWidth = Dimensions.get('window').width;
 let ScreenHeight = Dimensions.get('window').height;
 
-import DrawView from './DrawView';
-
 var d3 = require('../d3.v4.js');
+
+import Node from './ForceNode';
+import Line from './ForceLine';
 
 let radius = 10;
 let loadCount = 7;
@@ -62,6 +63,8 @@ export default class ForceLayout extends Component {
     this.selectLeft = 0;
     this.selectTop = 0;
     this.selectNode = null;
+    this.arrayNode = [];
+    this.arrayEdge = [];
     this.edgeRefs = [];
     this.nodeRefs = [];
     this.goujianJson = null;
@@ -69,39 +72,34 @@ export default class ForceLayout extends Component {
     this.zixingJson = null;
     this.myNodes = null;
     this.myEdges = null;
-    this.drawData = {
-      order: ['lines', 'rects', 'circles', 'texts'],
-      lines: [],
-      rects: [],
-      circles: [],
-      texts: [],
-    };
+
     this.state={
       blnUpdate: false,
       loadIndex: 0,
       status: cv.LAYER_LOAD,
     };
 
+    this.relativeX = -ScreenWidth / 2;
+    this.relativeY = -ScreenHeight / 2;
     this.moveViewIsMoved = false;
     this.moveViewX = 0;
     this.moveViewY = 0;
+    this.moveViewStyle = {
+      position: 'absolute',
+      left: this.moveViewX + this.relativeX,
+      top: this.moveViewY + this.relativeY,
+    };
     this.scaleViewValue = 1;
     this.scaleViewStyle = {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
       transform: [{
         scale: this.scaleViewValue,
       }]
     };
-    this.setRelativePos();
     this.nodeSize={
       minX: 0,
       minY: 0,
       maxX: 0,
       maxY: 0,
-      width: 0,
-      height: 0,
     };
     global.forceLayout = this;
     console.log(ScreenWidth, ScreenHeight);
@@ -150,6 +148,7 @@ export default class ForceLayout extends Component {
   }
   initBaseNodes(){
     this.myNodes = [];
+    this.arrayNode = [];
     for(var i = 0; i < this.zixingJson.length; i++){
       var data = this.zixingJson[i];
       this.myNodes.push({
@@ -164,10 +163,22 @@ export default class ForceLayout extends Component {
         order: i,
         radius: 10,
       });
+      this.arrayNode.push(
+        <Node ref={(ref)=>{this.nodeRefs.push(ref);}}
+          key={i} data={this.myNodes[i]} visible={false}/>
+      );
+    }
+  }
+  jianchaNode(){
+    for(var i=0;i<this.myNodes.length;i++){
+      if (i != this.myNodes[i].index){
+        console.log('检查Node顺序出错:', i, this.myNodes[i].index);
+      }
     }
   }
   initBaseEdges(){
     this.myEdges = [];
+    this.arrayEdge = [];
     var iOrder = 0;
     for(var i=0;i<this.goujianGuanxiJson.length;i++){
       var gx = this.goujianGuanxiJson[i];
@@ -205,6 +216,7 @@ export default class ForceLayout extends Component {
       this.myEdges.push(edge);
       iOrder++;
     }
+    // console.log('myEdges count:', this.myEdges.length);
     for (var i = 0; i < this.myNodes.length; i++) {
       if (this.myNodes[i].myWeight > this.maxWeight)
         this.maxWeight = this.myNodes[i].myWeight;
@@ -260,6 +272,12 @@ export default class ForceLayout extends Component {
             this.myEdges[i].color = 'rgb(0, 255, 0)';
             this.myEdges[i].type = 0;
             this.lvEdges[lvi].push(this.myEdges[i]);
+            this.arrayEdge.push(
+              <Line ref={l=>{this.edgeRefs.push(l);}} 
+                key={this.myEdges[i].order}
+                edge={this.myEdges[i]} 
+                visible={false}/>
+            );
           }else{
             this.myEdges[i].color = 'rgba(128, 128, 128, 128)';
             this.myEdges[i].type = 1;
@@ -270,64 +288,6 @@ export default class ForceLayout extends Component {
       }
       console.log(this.myEdges.length, this.lvEdges[lvi].length, this.lvGrayEdges.length, this.lvNodes[lvi].length, count);
     }
-  }
-  setDrawData(){
-    var setDataTime = (new Date()).getTime();
-    this.drawData = {
-      order: ['lines', 'rects', 'circles', 'texts'],
-      lines: [],
-      rects: [],
-      circles: [],
-      texts: [],
-    };
-    for (var i = 0; i < this.lvNodes[this.lvIndex].length; i++) {
-      var node = this.lvNodes[this.lvIndex][i];
-      var x = node.x ? node.x : 0;
-      var y = node.y ? node.y : 0;
-      var tempData = {
-        x: x,
-        y: y,
-        color: processColor('white'),
-        fill: 0,
-        order: node.order,
-      };
-      var tempText = {
-        x: x,
-        y: y,
-        color: processColor('blue'),
-        order: node.order,
-        fontSize: 14,
-        text: node.zxContent,
-      };
-      this.drawData.texts.push(tempText);
-      if (node.kind == 0){
-        tempData.radius = node.radius;
-        tempData.color = processColor('rgb(255,0,0)');
-        this.drawData.circles.push(tempData);
-      }else if (node.kind == 1) {
-        tempData.width = node.radius * 2;
-        tempData.height = node.radius * 2;
-        tempData.x = x - node.radius;
-        tempData.y = y - node.radius;
-        tempData.color = processColor('rgb(0,255,0)');
-        this.drawData.rects.push(tempData);
-      }else{
-        tempData.width = node.radius * 2;
-        tempData.height = node.radius * 2;
-        tempData.x = x - node.radius;
-        tempData.y = y - node.radius;
-        tempData.color = processColor('rgb(255,255,255)');
-        this.drawData.rects.push(tempData);
-      }
-      node.showNode = tempData;
-    }
-    // if (this.refs.drawView){
-    //   this.refs.drawView.setNativeProps({
-    //     drawData: this.drawData,
-    //   });
-    // }
-    console.log('set data time: ' + ((new Date()).getTime() - setDataTime));
-    this.updateRender();
   }
   getIndexForArray(arr, obj){
     for(var i=0;i<arr.length;i++){
@@ -492,19 +452,18 @@ export default class ForceLayout extends Component {
     }
   }
   onPanResponderMove(e, g){
-    console.log(g.numberActiveTouches, e.nativeEvent.touches.length);
     if (g.numberActiveTouches == 1){
       var mx = this.moveViewX + g.dx / this.scaleViewValue;
       var my = this.moveViewY + g.dy / this.scaleViewValue;
-      mx = Math.max(mx, this.nodeSize.minX + ScreenWidth * 0.5);
-      mx = Math.min(mx, this.nodeSize.maxX - ScreenWidth * 0.5);
+      mx = Math.max(mx, this.nodeSize.minX + ScreenWidth * 1.5);
+      mx = Math.min(mx, this.nodeSize.maxX - ScreenWidth * 1.5);
       my = Math.max(my, this.nodeSize.minY + ScreenHeight * 0.5);
-      my = Math.min(my, this.nodeSize.maxY - ScreenHeight * 0.5);
-      if (this.refs.drawView){
-        this.refs.drawView.setNativeProps({
-          transPos: {
-            x: mx + this.relativeX,
-            y: my + this.relativeY,
+      my = Math.min(my, this.nodeSize.maxY - ScreenHeight * 1);
+      if (this.refs.moveView){
+        this.refs.moveView.setNativeProps({
+          style:{
+            left: mx + this.relativeX,
+            top: my + this.relativeY,
           }
         });
         this.moveViewIsMoved = true;
@@ -519,25 +478,7 @@ export default class ForceLayout extends Component {
       this.scaleViewValue += (tempScale - this.touchScale) * 0.002;
       if (this.scaleViewValue >= 2.5) this.scaleViewValue = 2.5;
       if (this.scaleViewValue <= 0.1) this.scaleViewValue = 0.1;
-      // console.log('now Scale: ' + this.scaleViewValue);
-      this.setRelativePos();
       this.touchScale = tempScale;
-      if (this.refs.drawView){
-        this.refs.drawView.setNativeProps({
-          // scaleValue: {
-          //   x: this.scaleViewValue,
-          //   y: this.scaleViewValue,
-          // },
-          // transPos: {
-          //   x: this.moveViewX + this.relativeX,
-          //   y: this.moveViewY + this.relativeY,
-          // },
-          style: {
-            width: ScreenWidth / this.scaleViewValue,
-            height: ScreenHeight / this.scaleViewValue,
-          }
-        });
-      }
       if (this.refs.scaleView){
         this.refs.scaleView.setNativeProps({
           style:{
@@ -548,19 +489,6 @@ export default class ForceLayout extends Component {
         });
       }
     }
-    console.log('relativeX:' + this.relativeX, 'relativeY:' + this.relativeY, 'scaleViewValue:' + this.scaleViewValue);
-  }
-  setRelativePos(){
-    var temp = 0;
-    // if (this.scaleViewValue < 1){
-    //   temp = this.scaleViewValue;
-    // }else if (this.scaleViewValue > 1) {
-    //   temp = 1 - this.scaleViewValue;
-    // }else{
-    //   temp = 0;
-    // }
-    this.relativeX = 0;//ScreenWidth / 2 + ScreenWidth * temp / 2;
-    this.relativeY = 0;//ScreenHeight / 2 + ScreenHeight * temp / 2;
   }
   onPanResponderRelease(e, g){
     this.endPanResponder(e, g);
@@ -573,10 +501,10 @@ export default class ForceLayout extends Component {
       this.moveViewX += g.dx / this.scaleViewValue;
       this.moveViewY += g.dy / this.scaleViewValue;
 
-      this.moveViewX = Math.max(this.moveViewX, this.nodeSize.minX + ScreenWidth * 0.5);
-      this.moveViewX = Math.min(this.moveViewX, this.nodeSize.maxX - ScreenWidth * 0.5);
+      this.moveViewX = Math.max(this.moveViewX, this.nodeSize.minX + ScreenWidth * 1.5);
+      this.moveViewX = Math.min(this.moveViewX, this.nodeSize.maxX - ScreenWidth * 1.5);
       this.moveViewY = Math.max(this.moveViewY, this.nodeSize.minY + ScreenHeight * 0.5);
-      this.moveViewY = Math.min(this.moveViewY, this.nodeSize.maxY - ScreenHeight * 0.5);
+      this.moveViewY = Math.min(this.moveViewY, this.nodeSize.maxY - ScreenHeight * 1);
 
       this.moveViewIsMoved = false;
       // console.log(this.moveViewX, this.moveViewY, this.scaleViewValue, this.nodeSize);
@@ -598,17 +526,14 @@ export default class ForceLayout extends Component {
     this.tickedTime = new Date().getTime();
     this.lvNodes[this.lvIndex].forEach(this.freshNode.bind(this));
     // this.lvEdges[this.lvIndex].forEach(this.freshLink.bind(this));
-
-    this.setDrawData();
-    // this.updateRender();
   }
   endTick() {
     console.log('end force', this.lvIndex, ', 计算时间:', (new Date()).getTime() - this.forceTime);
     if (this.lvIndex + 1 >= this.lvNodes.length){
       //当所有节点运动完毕之后，将线显示出来
+      // setTimeout(()=>{this.lvNodes[this.lvIndex].forEach(this.freshNode.bind(this));}, 1000);
       this.setEdgeVisible(null, true);
-      // this.setDrawData();
-      // this.updateRender();
+      this.updateRender();
       console.log('all node is add.');
     }else{
       this.lvIndex++;
@@ -639,8 +564,6 @@ export default class ForceLayout extends Component {
     this.nodeSize.maxX = Math.max(this.nodeSize.maxX, parseInt(d.x));
     this.nodeSize.minY = Math.min(this.nodeSize.minY, parseInt(d.y));
     this.nodeSize.maxY = Math.max(this.nodeSize.maxY, parseInt(d.y));
-    this.nodeSize.width = this.nodeSize.maxX - this.nodeSize.minX;
-    this.nodeSize.height = this.nodeSize.maxY - this.nodeSize.minY;
     if (this.nodeRefs){
       if (this.nodeRefs[d.order]) {
         this.nodeRefs[d.order].setPosition(d.x, d.y);
@@ -666,19 +589,13 @@ export default class ForceLayout extends Component {
         </View>
       );
     }else {
-      // console.log(ScreenWidth / this.scaleViewValue);
       return (
-        <View style={styles.container} {...this._panResponder.panHandlers} pointerEvents={'box-only'}>
+        <View style={styles.container} {...this._panResponder.panHandlers}>
           <View ref={'scaleView'} style={this.scaleViewStyle} >
-            <DrawView style={{
-              width: parseInt(ScreenWidth), 
-              height: parseInt(ScreenHeight), 
-              backgroundColor:'#AAA'
-            }}
-              transPos={{x:this.moveViewX, y:this.moveViewY}}
-              scaleValue={{x:this.scaleViewValue, y:this.scaleViewValue}}
-              drawData={this.drawData}
-              ref={'drawView'} />
+            <View ref={'moveView'} style={this.moveViewStyle} >
+              {this.drawLink()}
+              {this.arrayNode}
+            </View>
           </View>
         </View>
       );
@@ -688,7 +605,17 @@ export default class ForceLayout extends Component {
     this.renderTime = (new Date()).getTime();
   }
   componentDidUpdate(prevProps, prevState) {
-    console.log('render drawvew time:' + ((new Date()).getTime() - this.renderTime));
+    console.log('render drawview time:' + ((new Date()).getTime() - this.renderTime));
+  }
+  drawLink(){
+    return (
+      <Surface ref={'lineView'} 
+        width={this.nodeSize.maxX - this.nodeSize.minX} height={this.nodeSize.maxY - this.nodeSize.minY} 
+        style={{left: this.nodeSize.minX, top: this.nodeSize.minY}}>
+        {this.arrayEdge}
+      </Surface>
+    );
+    // return this.arrayEdge;
   }
 }
 

@@ -1,47 +1,173 @@
 //
-//  CustomView.m
-//  Jicheng4
+//  DrawView.m
+//  Jicheng1
 //
-//  Created by guojicheng on 16/8/12.
+//  Created by guojicheng on 16/8/24.
 //  Copyright © 2016年 Facebook. All rights reserved.
 //
 
-#import "CustomView.h"
+#import "DrawView.h"
+#import "RCTConvert.h"
 
-@implementation CustomView
+@implementation DrawView
 
-- (id)initWithFrame:(CGRect)frame
+-(id)initWithFrame:(CGRect)frame
 {
   self = [super initWithFrame:frame];
   if (self){
-    
+//    self.backgroundColor =  [UIColor clearColor];
+//    self.layer.anchorPoint = CGPointMake(0.5, 0.5);
   }
   return self;
 }
 
--(void) drawRect:(CGRect)rect
+//- (void)setRectBackgroundColor:(UIColor *)backgroundColor
+//{
+//  self.backgroundColor = backgroundColor;
+//}
+
+-(void)layoutSubviews
 {
-  //一个不透明类型的Quartz 2D绘画环境，相当于一个画布，你可以在上面任意绘画
+  [super layoutSubviews];
+  
+//  [self setNeedsDisplay];
+}
+
+- (void)setNeedsDisplay
+{
+  [super setNeedsDisplay];
+  [self.layer setNeedsDisplay];
+}
+
+-(void) setAnchorPoint:(CGPoint)anchorPoint forView:(UIView*)view
+{
+  CGPoint oldOrigin = view.frame.origin;
+  view.layer.anchorPoint = anchorPoint;
+  CGPoint newOrigin = view.frame.origin;
+  CGPoint transition;
+  transition.x = newOrigin.x - oldOrigin.x;
+  transition.y = newOrigin.y - oldOrigin.y;
+  view.center = CGPointMake(view.center.x - transition.x, view.center.y - transition.y);
+}
+
+-(void)drawRect:(CGRect)rect
+{
+  //An opaque type that represents a Quartz 2D drawing environment.
+  //一个不透明类型的Quartz 2D绘画环境,相当于一个画布,你可以在上面任意绘画
+  CGContextRef context = UIGraphicsGetCurrentContext();
+//  NSLog(@"%f, %f", self.center.x, self.center.y);
+  CGContextScaleCTM(context, _scaleValue.x, _scaleValue.y);
+  CGContextTranslateCTM(context, _transPos.x, _transPos.y);
+  
+//  CALayer* subLayer = [CALayer layer];
+//  subLayer.frame = self.layer.bounds;
+////  subLayer.frame = CGRectMake(10, 10, 100, 200);
+//  subLayer.backgroundColor = [UIColor yellowColor].CGColor;
+//  [self.layer insertSublayer:subLayer atIndex:0];
+//  [self.layer renderInContext:context];
+  
+  if (!CGRectIsEmpty(self.clipping)) {
+    CGContextClipToRect(context, self.clipping);
+  }
+  UIColor * color;
+  NSArray * orderKey = [RCTConvert NSArray:_drawData[@"order"]];
+//  NSLog(@"%@", orderKey);
+//  for (NSString *key in orderKey){
+//    NSLog(@"%@", key);
+//  }
+  for (NSString *key in orderKey) {
+    NSArray* array = [RCTConvert NSArray:_drawData[key]];
+    if ([key containsString:@"lines"]){
+      for (int i=0; i<array.count; i++) {
+        color = [RCTConvert UIColor:array[i][@"color"]];
+        CGContextSetStrokeColorWithColor(context, color.CGColor);
+        CGContextSetLineWidth(context, [RCTConvert CGFloat:array[i][@"stroke"]]);
+        CGPoint aPoints[2];//坐标点
+        aPoints[0] =CGPointMake([RCTConvert CGFloat:array[i][@"x1"]], [RCTConvert CGFloat:array[i][@"y1"]]);//坐标1
+        aPoints[1] =CGPointMake([RCTConvert CGFloat:array[i][@"x2"]], [RCTConvert CGFloat:array[i][@"y2"]]);//坐标2
+        CGContextAddLines(context, aPoints, 2);//添加线
+        CGContextDrawPath(context, kCGPathStroke); //根据坐标绘制路径
+      }
+    }else if ([key containsString:@"rects"]){
+      for(int i=0; i<array.count; i++){
+        CGRect rect = [RCTConvert CGRect:array[i]];
+        color = [RCTConvert UIColor:array[i][@"color"]];
+        NSInteger fillType = [RCTConvert NSInteger:array[i][@"fill"]];
+        if (fillType == 2){
+          UIColor* sideColor = [RCTConvert UIColor:array[i][@"sideColor"]];
+          CGFloat sideWidth = [RCTConvert CGFloat:array[i][@"sideWidth"]];
+          CGContextSetFillColorWithColor(context, color.CGColor);//填充颜色
+          CGContextSetStrokeColorWithColor(context, sideColor.CGColor);//线框颜色
+          CGContextSetLineWidth(context, sideWidth);//线的宽度
+          CGContextAddRect(context,rect);//画方框
+          CGContextDrawPath(context, kCGPathFillStroke);//绘画路径
+        }else if (fillType == 1){
+          CGContextSetLineWidth(context, 1);//线的宽度
+          CGContextSetStrokeColorWithColor(context, color.CGColor);
+          CGContextStrokeRect(context, rect);
+        }else{
+          CGContextSetFillColorWithColor(context, color.CGColor);
+          CGContextFillRect(context, rect);
+        }
+      }
+    }else if ([key containsString:@"circles"]){
+      for(int i=0; i<array.count; i++){
+        CGPoint point = [RCTConvert CGPoint:array[i]];
+        color = [RCTConvert UIColor:array[i][@"color"]];
+        CGFloat radius = [RCTConvert CGFloat:array[i][@"radius"]];
+        NSInteger fillType = [RCTConvert NSInteger:array[i][@"fill"]];
+        CGContextAddArc(context, point.x, point.y, radius, 0, 2*PI, 0);
+        if (fillType == 2){
+          UIColor* sideColor = [RCTConvert UIColor:array[i][@"sideColor"]];
+          CGFloat sideWidth = [RCTConvert CGFloat:array[i][@"sideWidth"]];
+          CGContextSetFillColorWithColor(context, color.CGColor);//填充颜色
+          CGContextSetStrokeColorWithColor(context, sideColor.CGColor);//线框颜色
+          CGContextSetLineWidth(context, sideWidth);//线的宽度
+          CGContextDrawPath(context, kCGPathFillStroke);
+        }else if (fillType == 1){
+          CGContextSetLineWidth(context, 1);//线的宽度
+          CGContextSetStrokeColorWithColor(context, color.CGColor);
+          CGContextDrawPath(context, kCGPathStroke);//绘画路径
+        }else{
+          CGContextSetFillColorWithColor(context, color.CGColor);
+          CGContextDrawPath(context, kCGPathFill);//绘画路径
+        }
+      }
+    }else if ([key containsString:@"texts"]){
+      NSMutableParagraphStyle* paragraph = [[NSMutableParagraphStyle alloc] init];
+      paragraph.alignment = NSTextAlignmentCenter;
+      for(int i=0; i<array.count; i++){
+        color = [RCTConvert UIColor:array[i][@"color"]];
+        CGFloat fontSize = [RCTConvert CGFloat:array[i][@"fontSize"]];
+        UIFont* font = [UIFont fontWithName:@"Arial" size:fontSize];
+        NSString* text = [RCTConvert NSString:array[i][@"text"]];
+        CGRect rect = [text boundingRectWithSize:CGSizeMake(MAXFLOAT, fontSize * 2)
+                                         options:NSStringDrawingUsesLineFragmentOrigin
+                                      attributes:@{NSFontAttributeName:font,NSParagraphStyleAttributeName:paragraph} context:nil];
+        CGPoint point = [RCTConvert CGPoint:array[i]];
+        rect.origin.x = point.x - rect.size.width / 2;
+        rect.origin.y = point.y - rect.size.height / 2;
+        [text drawInRect:rect
+           withAttributes:@{
+                            NSFontAttributeName: font,
+                            NSForegroundColorAttributeName: color,
+                          }];
+      }
+    }
+  }
+}
+
+/*
+-(void)drawRect:(CGRect)rect
+{
+  //An opaque type that represents a Quartz 2D drawing environment.
+  //一个不透明类型的Quartz 2D绘画环境,相当于一个画布,你可以在上面任意绘画
   CGContextRef context = UIGraphicsGetCurrentContext();
   
-  /*写文字*/
   CGContextSetRGBFillColor(context, 1, 0, 0, 1.0);//填充颜色
-  UIFont* font = [UIFont boldSystemFontOfSize:15.0];//设置字体
-  NSDictionary* dic = @{NSFontAttributeName: font};
-  [@"画圆：" drawInRect:CGRectMake(10, 20, 80, 20) withAttributes:dic];
-  [@"画圆：" drawInRect:CGRectMake(10, 20, 80, 20) withAttributes:dic];
-  [@"画线及弧形：" drawInRect:CGRectMake(10, 80, 100, 20) withAttributes:dic];
-  [@"画矩形：" drawInRect:CGRectMake(10, 120, 80, 20) withAttributes:dic];
-  [@"画扇形和椭圆：" drawInRect:CGRectMake(10, 160, 110, 20) withAttributes:dic];
-  [@"画三角形：" drawInRect:CGRectMake(10, 220, 80, 20) withAttributes:dic];
-  [@"画圆角矩形：" drawInRect:CGRectMake(10, 260, 100, 20) withAttributes:dic];
-  [@"画贝塞尔曲线：" drawInRect:CGRectMake(10, 300, 100, 20) withAttributes:dic];
-  [@"图片：" drawInRect:CGRectMake(10, 340, 80, 20) withAttributes:dic];
-  
-  /*画圆*/
-  //边框圆
-  CGContextSetRGBStrokeColor(context, 1, 1, 1, 1.0);//设置颜色
+  CGContextSetRGBStrokeColor(context, 1, 1, 1, 1.0);//画笔线的颜色
   CGContextSetLineWidth(context, 1.0);//线的宽度
+  
   //void CGContextAddArc(CGContextRef c,CGFloat x, CGFloat y,CGFloat radius,CGFloat startAngle,CGFloat endAngle, int clockwise)1弧度＝180°/π （≈57.3°） 度＝弧度×180°/π 360°＝360×π/180 ＝2π 弧度
   // x,y为圆点坐标，radius半径，startAngle为开始的弧度，endAngle为 结束的弧度，clockwise 0为顺时针，1为逆时针。
   CGContextAddArc(context, 100, 20, 15, 0, 2*PI, 0); //添加一个圆
@@ -59,7 +185,7 @@
   //kCGPathFill填充非零绕数规则,kCGPathEOFill表示用奇偶规则,kCGPathStroke路径,kCGPathFillStroke路径填充,kCGPathEOFillStroke表示描线，不是填充
   CGContextDrawPath(context, kCGPathFillStroke); //绘制路径加填充
   
-  /*画线及孤线*/
+  //画线及孤线
   //画线
   CGPoint aPoints[2];//坐标点
   aPoints[0] =CGPointMake(100, 80);//坐标1
@@ -93,7 +219,7 @@
   CGContextStrokePath(context);//绘画路径
   //注，如果还是没弄明白怎么回事，请参考：http://donbe.blog.163.com/blog/static/138048021201052093633776/
   
-  /*画矩形*/
+  //画矩形
   CGContextStrokeRect(context,CGRectMake(100, 120, 10, 10));//画方框
   CGContextFillRect(context,CGRectMake(120, 120, 10, 10));//填充框
   //矩形，并填弃颜色
@@ -139,9 +265,9 @@
   CGColorSpaceRelease(rgb);
   //画线形成一个矩形
   //CGContextSaveGState与CGContextRestoreGState的作用
-  /*
-   CGContextSaveGState函数的作用是将当前图形状态推入堆栈。之后，您对图形状态所做的修改会影响随后的描画操作，但不影响存储在堆栈中的拷贝。在修改完成后，您可以通过CGContextRestoreGState函数把堆栈顶部的状态弹出，返回到之前的图形状态。这种推入和弹出的方式是回到之前图形状态的快速方法，避免逐个撤消所有的状态修改；这也是将某些状态（比如裁剪路径）恢复到原有设置的唯一方式。
-   */
+  //
+  // CGContextSaveGState函数的作用是将当前图形状态推入堆栈。之后，您对图形状态所做的修改会影响随后的描画操作，但不影响存储在堆栈中的拷贝。在修改完成后，您可以通过CGContextRestoreGState函数把堆栈顶部的状态弹出，返回到之前的图形状态。这种推入和弹出的方式是回到之前图形状态的快速方法，避免逐个撤消所有的状态修改；这也是将某些状态（比如裁剪路径）恢复到原有设置的唯一方式。
+  
   CGContextSaveGState(context);
   CGContextMoveToPoint(context, 220, 90);
   CGContextAddLineToPoint(context, 240, 90);
@@ -171,7 +297,7 @@
   //下面再看一个颜色渐变的圆
   CGContextDrawRadialGradient(context, gradient, CGPointMake(300, 100), 0.0, CGPointMake(300, 100), 10, kCGGradientDrawsBeforeStartLocation);
   
-  /*画扇形和椭圆*/
+  //画扇形和椭圆
   //画扇形，也就画圆，只不过是设置角度的大小，形成一个扇形
   aColor = [UIColor colorWithRed:0 green:1 blue:1 alpha:1];
   CGContextSetFillColorWithColor(context, aColor.CGColor);//填充颜色
@@ -185,7 +311,7 @@
   CGContextAddEllipseInRect(context, CGRectMake(160, 180, 20, 8)); //椭圆
   CGContextDrawPath(context, kCGPathFillStroke);
   
-  /*画三角形*/
+  //画三角形
   //只要三个点就行跟画一条线方式一样，把三点连接起来
   CGPoint sPoints[3];//坐标点
   sPoints[0] =CGPointMake(100, 220);//坐标1
@@ -195,7 +321,7 @@
   CGContextClosePath(context);//封起来
   CGContextDrawPath(context, kCGPathFillStroke); //根据坐标绘制路径
   
-  /*画圆角矩形*/
+  //画圆角矩形
   float fw = 180;
   float fh = 280;
   
@@ -207,7 +333,7 @@
   CGContextClosePath(context);
   CGContextDrawPath(context, kCGPathFillStroke); //根据坐标绘制路径
   
-  /*画贝塞尔曲线*/
+  //画贝塞尔曲线
   //二次曲线
   CGContextMoveToPoint(context, 120, 300);//设置Path的起点
   CGContextAddQuadCurveToPoint(context,190, 310, 120, 390);//设置贝塞尔曲线的控制点坐标和终点坐标
@@ -218,7 +344,7 @@
   CGContextStrokePath(context);
   
   
-  /*图片*/
+  //图片
   UIImage *image = [UIImage imageNamed:@"apple.jpg"];
   [image drawInRect:CGRectMake(60, 340, 20, 20)];//在坐标中画出图片
   //    [image drawAtPoint:CGPointMake(100, 340)];//保持图片大小在point点开始画图片，可以把注释去掉看看
@@ -226,5 +352,6 @@
   
   //    CGContextDrawTiledImage(context, CGRectMake(0, 0, 20, 20), image.CGImage);//平铺图
 }
+*/
 
 @end
