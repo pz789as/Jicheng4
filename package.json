@@ -9,6 +9,8 @@
     "native-base": "^0.5.4",
     "react": "15.2.1",
     "react-native": "^0.31.0",
-    "react-native-svg": "^4.0.0"
+    "react-native-svg": "^4.0.0",
+    "react-native-tcp": "^2.0.1",
+    "buffer": "^4.9.1"
   }
 }
