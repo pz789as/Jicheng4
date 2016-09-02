@@ -16,7 +16,7 @@ import TestD3 from './TestD3';
 import TestArt from './TestArt';
 import ArtLayout from './ArtLayout';
 // import ForceLayout from './ForceLayout';
-import ForceLayout from './ForceShow/ForceLayout2';
+import ForceLayout from './ForceShow/ForceLayout3';
 import TestNet from './TestNet';
 
 var test = false;
@@ -28,7 +28,7 @@ class Jicheng4 extends Component {
     if (test == false){
       return (
         <View style={styles.container}>
-          <TestNet />
+          <ForceLayout />
         </View>
       );
     }else{

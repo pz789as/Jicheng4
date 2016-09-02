@@ -12,5 +12,8 @@
     "react-native-svg": "^4.0.0",
     "react-native-tcp": "^2.0.1",
     "buffer": "^4.9.1"
+  },
+  "browser":{
+    "net": "react-native-tcp"
   }
 }

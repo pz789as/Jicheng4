@@ -37,7 +37,8 @@ export default class ForceNode extends Component {
       height: this.data.radius * 2,
       left: this.x,
       top: this.y,
-      borderRadius: this.type == 0 ? this.data.radius : 0,
+      // borderRadius: this.type == 0 ? this.data.radius : 0,
+      borderRadius: this.data.radius,
       backgroundColor: this.data.backColor,
     };
     this.text = this.data.zxContent;
@@ -48,11 +49,20 @@ export default class ForceNode extends Component {
       textAlign: 'center',
       backgroundColor: '#0000',
     };
+    var tempVisible = props.visible == undefined ? true : props.visible; 
     this.state = {
-      visible: props.visible == undefined ? true : props.visible,
+      visible: tempVisible,
     };
     this._panResponder = {};
     this.blnInTouch = false;
+  }
+  componentDidMount(){
+    if (this.state.visible){
+      this.setType(this.data.kind);
+      this.setRadius(this.data.radius);
+      this.setColor(this.data.backColor);
+      this.setPosition(this.data.x, this.data.y);
+    }
   }
   componentWillMount(){
     this._panResponder = PanResponder.create({
@@ -109,7 +119,7 @@ export default class ForceNode extends Component {
       this.setType(this.data.kind);
       this.setRadius(this.data.radius);
       this.setColor(this.data.backColor);
-      this.setPosition(this.x, this.y);
+      this.setPosition(this.data.x, this.data.y);
     }
   }
   setRadius(radius){
@@ -119,7 +129,8 @@ export default class ForceNode extends Component {
         style:{
           width: this.data.radius * 2,
           height: this.data.radius * 2,
-          borderRadius: this.type == 0 ? this.data.radius : 0,
+          // borderRadius: this.type == 0 ? this.data.radius : 0,
+          borderRadius: this.data.radius,
         },
       });
     }

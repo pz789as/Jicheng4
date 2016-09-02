@@ -25,14 +25,14 @@ let ScreenHeight = Dimensions.get('window').height;
 export default class ForceLine extends Component {
   constructor(props){
     super(props);
-    this.x1 = -1;
-    this.y1 = -1;
-    this.x2 = -2;
-    this.y2 = -2;
-    this.tx = 0;
-    this.ty = 0;
-    this.edge = props.edge == undefined ? null : props.edge;
-    this.color = this.edge == null ? 'green' : this.edge.color;
+    this.edge = props.edge;
+    this.x1 = this.edge.source.x == undefined ? -1 : this.edge.source.x;
+    this.y1 = this.edge.source.y == undefined ? -1 : this.edge.source.y;
+    this.x2 = this.edge.target.x == undefined ? -2 : this.edge.target.x;
+    this.y2 = this.edge.target.y == undefined ? -2 : this.edge.target.y;
+    this.tx = props.transPos == undefined ? 0 : props.transPos.x;
+    this.ty = props.transPos == undefined ? 0 : props.transPos.y;
+    this.color = this.edge.color == undefined ? 'rgb(0, 255 0)': this.edge.color;
     this.state={
       visible: props.visible == undefined ? true : props.visible,
       blnUpdate: false,
@@ -51,14 +51,7 @@ export default class ForceLine extends Component {
     };
   }
   componentDidMount() {
-    if (this.state.visible){
-      this.setPosition(
-        this.edge.source.x,
-        this.edge.source.y,
-        this.edge.target.x,
-        this.edge.target.y
-      );
-    }
+
   }
   
   setTransPos(tx, ty){
@@ -85,7 +78,7 @@ export default class ForceLine extends Component {
   updateInfo(){
     this.width = Dis(this.x1 - this.x2, this.y1 - this.y2);
     this.x = (this.x1 + this.x2) / 2 - this.width / 2;
-    this.y = (this.y1 + this.y2) / 2;
+    this.y = (this.y1 + this.y2) / 2 + 0.5;
     this.rotate = Math.atan((this.y2 - this.y1) / (this.x2 - this.x1)) * 180 / Math.PI;
   }
   selfSet(){
@@ -143,7 +136,7 @@ export default class ForceLine extends Component {
       );
     }else{
       return (
-        <View style={{backgroundColor:'#0000', overflow: 'hidden'}}/>
+        <View style={{backgroundColor:'#0000'}}/>
       );
     }
   }
