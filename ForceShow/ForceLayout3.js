@@ -56,14 +56,6 @@ export default class ForceLayout extends Component {
   constructor(props){
     super(props);
 
-    this.lvNodes = [];
-    this.lvEdges = [];
-    this.lvGrayEdges = [];
-    this.lvIndex = 0;
-    this.minWeight = 9999;
-    this.maxWeight = 1;
-    this.linearScale = null;
-    this.simulation = null;
     this._panResponder = {};
     this.selectLeft = 0;
     this.selectTop = 0;
@@ -72,17 +64,14 @@ export default class ForceLayout extends Component {
     this.arrayEdge = [];
     this.edgeRefs = [];
     this.nodeRefs = [];
-    this.goujianJson = null;
-    this.goujianGuanxiJson = null;
-    this.zixingJson = null;
     this.myNodes = null;
     this.myEdges = null;
 
     this.state={
       blnUpdate: false,
       loadIndex: 0,
-      status: cv.LAYER_LOAD,
     };
+    this.status = cv.LAYER_LOAD;
 
     this.relativeX = -ScreenWidth / 2;
     this.relativeY = -ScreenHeight / 2;
@@ -119,13 +108,10 @@ export default class ForceLayout extends Component {
     });
     switch(index){
       case 0:
-        this.goujianJson = require('../data/mGoujian.json');
         break;
       case 1:
-        this.goujianGuanxiJson = require('../data/mGoujianGuanxi.json');
         break;
       case 2:
-        this.zixingJson = require('../data/mZixing.json');
         break;
       case 3:
         break;
@@ -223,9 +209,8 @@ export default class ForceLayout extends Component {
               visible={true}/>
           );
         }
-        this.setState({
-          status: cv.LAYER_FORCE,
-        });
+        this.status = cv.LAYER_FORCE;
+        this.updateRender();
       }
     }
   }
@@ -270,36 +255,28 @@ export default class ForceLayout extends Component {
     });
   }
   setSelectNode(event, index, e, g) {
-    if (event == cv.NODE_EVENT_START){
-      this.simulation.alphaTarget(0.3).restart();
-      this.selectNode = this.myNodes[index];
-      this.selectLeft = g.dx;
-      this.selectTop = g.dy;
-      this.selectNode.fx = this.selectNode.x;
-      this.selectNode.fy = this.selectNode.y;
-    }else if (event == cv.NODE_EVENT_MOVE){
-      this.selectNode.fx += (g.dx - this.selectLeft) / this.scaleViewValue;
-      this.selectNode.fy += (g.dy - this.selectTop) / this.scaleViewValue;
-      this.selectLeft = g.dx;
-      this.selectTop = g.dy;
-    }else if (event == cv.NODE_EVENT_END) {
-      this.simulation.alphaTarget(0);
-      this.selectNode.fx = null;
-      this.selectNode.fy = null;
-      this.selectNode = null;
-    }
+    // if (event == cv.NODE_EVENT_START){
+    //   this.selectNode = this.myNodes[index];
+    //   this.selectLeft = g.dx;
+    //   this.selectTop = g.dy;
+    // }else if (event == cv.NODE_EVENT_MOVE){
+    //   this.selectLeft = g.dx;
+    //   this.selectTop = g.dy;
+    // }else if (event == cv.NODE_EVENT_END) {
+    //   this.selectNode = null;
+    // }
   }
   onPressNode(data){
     console.log('onPress', data.order, data.zxContent); 
   }
   onStartShouldSetPanResponder(e, g){
-    if (this.state.status == cv.LAYER_LOAD || this.selectNode != null){
+    if (this.status == cv.LAYER_LOAD || this.selectNode != null){
       return false;
     }
     return true;
   }
   onMoveShouldSetPanResponder(e, g){
-    if (this.state.status == cv.LAYER_LOAD || this.selectNode != null){
+    if (this.status == cv.LAYER_LOAD || this.selectNode != null){
       return false;
     }
     return true;
@@ -315,10 +292,10 @@ export default class ForceLayout extends Component {
     if (g.numberActiveTouches == 1){
       var mx = this.moveViewX + g.dx / this.scaleViewValue;
       var my = this.moveViewY + g.dy / this.scaleViewValue;
-      mx = Math.max(mx, this.nodeSize.minX + ScreenWidth * 1.5);
-      mx = Math.min(mx, this.nodeSize.maxX - ScreenWidth * 1.5);
-      my = Math.max(my, this.nodeSize.minY + ScreenHeight * 0.5);
-      my = Math.min(my, this.nodeSize.maxY - ScreenHeight * 1);
+      mx = Math.max(mx, this.nodeSize.minX + ScreenWidth * 0);
+      mx = Math.min(mx, this.nodeSize.maxX - ScreenWidth * 0);
+      my = Math.max(my, this.nodeSize.minY + ScreenHeight * 0);
+      my = Math.min(my, this.nodeSize.maxY - ScreenHeight * 0);
       if (this.refs.moveView){
         this.refs.moveView.setNativeProps({
           style:{
@@ -361,10 +338,10 @@ export default class ForceLayout extends Component {
       this.moveViewX += g.dx / this.scaleViewValue;
       this.moveViewY += g.dy / this.scaleViewValue;
 
-      this.moveViewX = Math.max(this.moveViewX, this.nodeSize.minX + ScreenWidth * 1.5);
-      this.moveViewX = Math.min(this.moveViewX, this.nodeSize.maxX - ScreenWidth * 1.5);
-      this.moveViewY = Math.max(this.moveViewY, this.nodeSize.minY + ScreenHeight * 0.5);
-      this.moveViewY = Math.min(this.moveViewY, this.nodeSize.maxY - ScreenHeight * 1);
+      this.moveViewX = Math.max(this.moveViewX, this.nodeSize.minX + ScreenWidth * 0);
+      this.moveViewX = Math.min(this.moveViewX, this.nodeSize.maxX - ScreenWidth * 0);
+      this.moveViewY = Math.max(this.moveViewY, this.nodeSize.minY + ScreenHeight * 0);
+      this.moveViewY = Math.min(this.moveViewY, this.nodeSize.maxY - ScreenHeight * 0);
 
       this.moveViewIsMoved = false;
       // console.log(this.moveViewX, this.moveViewY, this.scaleViewValue, this.nodeSize);
@@ -378,9 +355,6 @@ export default class ForceLayout extends Component {
     this.firstTimeout && clearTimeout(this.firstTimeout);
     global.forceLayout = null;
   }
-  getStatus(){
-    return this.state.status;
-  }
   updateRender(){
     this.setState({
       blnUpdate: !this.state.blnUpdate,
@@ -388,44 +362,7 @@ export default class ForceLayout extends Component {
   }
   
   render() {
-    // return(
-    //   <View style={{flex:1}}>
-    //     <View style={{
-    //       position: 'absolute',
-    //       left: 100,
-    //       top: 100,
-    //       backgroundColor: 'rgb(255,255,0)',
-    //       width: 100,
-    //       height: 100,
-    //       transform: [
-    //         {rotateZ: '0'}
-    //       ]
-    //     }} />
-    //     <View style={{
-    //       position: 'absolute',
-    //       left: 100,
-    //       top: 100,
-    //       backgroundColor: 'rgb(0,255,0)',
-    //       width: 100,
-    //       height: 100,
-    //       transform: [
-    //         {rotateZ: '45'}
-    //       ]
-    //     }} />
-    //     <View style={{
-    //       position: 'absolute',
-    //       left: 100,
-    //       top: 100,
-    //       backgroundColor: 'rgb(255,0,255)',
-    //       width: 100,
-    //       height: 1,
-    //       transform: [
-    //         {rotateZ: '30'}
-    //       ]
-    //     }} />
-    //   </View>
-    // );
-    if (this.state.status == cv.LAYER_LOAD){
+    if (this.status == cv.LAYER_LOAD){
       return (
         <View style={styles.loadView}>
           <View style={[styles.loadback]}>

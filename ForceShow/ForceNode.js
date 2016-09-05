@@ -9,6 +9,7 @@ import {
   Text,
   View,
   PanResponder,
+  Animated,
 } from 'react-native';
 
 import {
@@ -28,6 +29,7 @@ export default class ForceNode extends Component {
     this.initNodeStyle = null;
     this.x = ScreenWidth / 2 - this.data.radius;
     this.y = ScreenHeight / 2 - this.data.radius;
+    this.radius = this.data.radius;
     this.type = 0;
     this.initNodeStyle = {
       position: 'absolute',
@@ -37,16 +39,16 @@ export default class ForceNode extends Component {
       height: this.data.radius * 2,
       left: this.x,
       top: this.y,
-      // borderRadius: this.type == 0 ? this.data.radius : 0,
-      borderRadius: this.data.radius,
+      // borderRadius: this.type == 0 ? this.radius : 0,
+      borderRadius: this.radius,
       backgroundColor: this.data.backColor,
     };
     this.text = this.data.zxContent;
     this.fontColor = 'rgb(0,0,255)';
     this.initTextStyle = {
       color: this.fontColor,
-      width: this.data.radius * 2 * 0.75 * 3,
-      fontSize: this.data.radius * 2 * 0.75,
+      width: this.radius * 2 * 0.75 * 3,
+      fontSize: this.radius * 2 * 0.75,
       textAlign: 'center',
       backgroundColor: '#0000',
     };
@@ -56,6 +58,9 @@ export default class ForceNode extends Component {
     };
     this._panResponder = {};
     this.blnInTouch = false;
+    this.aniX = new Animated.Value(0);
+    this.aniY = new Animated.Value(0);
+    this.aniR = new Animated.Value(0);
   }
   componentDidMount(){
     if (this.state.visible){
@@ -76,13 +81,13 @@ export default class ForceNode extends Component {
     });
   }
   onStartShouldSetPanResponder(e, g){
-    if (forceLayout.getStatus == cv.LAYER_LOAD || !this.state.visible || g.numberActiveTouches != 1){
+    if (forceLayout.status == cv.LAYER_LOAD || !this.state.visible || g.numberActiveTouches != 1){
       return false;
     }
     return true;
   }
   onMoveShouldSetPanResponder(e, g){
-    if (forceLayout.getStatus == cv.LAYER_LOAD || !this.state.visible || g.numberActiveTouches != 1){
+    if (forceLayout.status == cv.LAYER_LOAD || !this.state.visible || g.numberActiveTouches != 1){
       return false;
     }
     return true;
@@ -124,14 +129,20 @@ export default class ForceNode extends Component {
     }
   }
   setRadius(radius){
-    this.data.radius = radius;
+    this.radius = radius;
     if (this.state.visible){
-      this.refs.body.setNativeProps({
+      this.refs.body && this.refs.body.setNativeProps({
         style:{
-          width: this.data.radius * 2,
-          height: this.data.radius * 2,
-          // borderRadius: this.type == 0 ? this.data.radius : 0,
-          borderRadius: this.data.radius,
+          width: this.radius * 2,
+          height: this.radius * 2,
+          // borderRadius: this.type == 0 ? this.radius : 0,
+          borderRadius: this.radius,
+        },
+      });
+      this.refs.text && this.refs.text.setNativeProps({
+        style:{
+          width: this.radius * 2 * 0.75 * 3,
+          fontSize: this.radius * 2 * 0.75,
         },
       });
     }
@@ -151,14 +162,18 @@ export default class ForceNode extends Component {
     if (this.state.visible){
       this.refs.body.setNativeProps({
         style:{
-          borderRadius: this.type == 0 ? this.data.radius : 0,
+          borderRadius: this.type == 0 ? this.radius : 0,
         },
       });
     }
   }
   setPosition(x, y){
-    this.x = x - this.data.radius;
-    this.y = y - this.data.radius;
+    if (x != null){
+      this.x = x - this.radius;
+    }
+    if (y != null){
+      this.y = y - this.radius;
+    }
     if (this.state.visible){
       this.refs.body.setNativeProps({
         style:{
@@ -179,19 +194,11 @@ export default class ForceNode extends Component {
       // );
       return (
         <View ref={'body'} style={this.initNodeStyle}>
-          <Text style={this.initTextStyle} onPress={this.TouchNode.bind(this)}>
+          <Text ref={'text'} style={this.initTextStyle} onPress={this.TouchNode.bind(this)}>
             {text}
           </Text>
         </View>
       );
-
-      // return (
-      //   <Text ref={'body'} style={[this.initNodeStyle, {color: this.fontColor,
-      //     fontSize: this.data.radius * 2 * 0.75,
-      //     textAlign: 'center',}]}>
-      //     {this.text}
-      //   </Text>
-      // );
     }else {
       return (
         <View style={{backgroundColor:'#0000'}}/>
@@ -200,6 +207,74 @@ export default class ForceNode extends Component {
   }
   TouchNode(){
     forceLayout.onPressNode(this.data);
+  }
+  setNodeMove(aniTemp, time){
+    console.log(aniTemp.x, aniTemp.y, aniTemp.r);
+    this.aniX.setValue(this.data.x);
+    this.aniY.setValue(this.data.y);
+    this.aniR.setValue(this.data.radius);
+    this.aniXLis = this.aniX.addListener(this.aniXCB.bind(this));
+    this.aniYLis = this.aniY.addListener(this.aniYCB.bind(this));
+    this.aniRLis = this.aniR.addListener(this.aniRCB.bind(this));
+    Animated.parallel([
+      Animated.timing(this.aniX, {
+        toValue: aniTemp.x,
+        duration: time,
+      }),
+      Animated.timing(this.aniY, {
+        toValue: aniTemp.y,
+        duration: time,
+      }),
+      Animated.timing(this.aniR, {
+        toValue: aniTemp.r,
+        duration: time,
+      })
+    ]).start(this.startOver.bind(this));
+  }
+  startOver(){
+    if (forceLayout.nowSelectedNode == this){
+      forceLayout.status = cv.LAYER_NODE_STOP;
+    }
+  }
+  aniXCB(v){
+    this.setPosition(v.value, null);
+  }
+  aniYCB(v){
+    this.setPosition(null, v.value);
+  }
+  aniRCB(v){
+    this.setRadius(v.value);
+  }
+  setNodeBack(time){
+    Animated.parallel([
+      Animated.timing(this.aniX, {
+        toValue: this.data.x,
+        duration: time,
+      }),
+      Animated.timing(this.aniY, {
+        toValue: this.data.y,
+        duration: time,
+      }),
+      Animated.timing(this.aniR, {
+        toValue: this.data.radius,
+        duration: time,
+      })
+    ]).start(this.backOver.bind(this));
+  }
+  backOver(){
+    this.clearListener();
+    if (forceLayout.nowSelectedNode == this){
+      forceLayout.statue = cv.LAYER_PLAY;
+      forceLayout.nowSelectedNode = null;
+    }
+  }
+  clearListener(){
+    this.aniXLis && this.aniX.removeListener(this.aniXLis);
+    this.aniYLis && this.aniY.removeListener(this.aniYLis);
+    this.aniRLis && this.aniR.removeListener(this.aniRLis);
+  }
+  componentWillUnmount() {
+    this.clearListener();
   }
 }
 

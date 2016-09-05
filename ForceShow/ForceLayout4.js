@@ -56,14 +56,6 @@ export default class ForceLayout extends Component {
   constructor(props){
     super(props);
 
-    this.lvNodes = [];
-    this.lvEdges = [];
-    this.lvGrayEdges = [];
-    this.lvIndex = 0;
-    this.minWeight = 9999;
-    this.maxWeight = 1;
-    this.linearScale = null;
-    this.simulation = null;
     this._panResponder = {};
     this.selectLeft = 0;
     this.selectTop = 0;
@@ -72,17 +64,15 @@ export default class ForceLayout extends Component {
     this.arrayEdge = [];
     this.edgeRefs = [];
     this.nodeRefs = [];
-    this.goujianJson = null;
-    this.goujianGuanxiJson = null;
-    this.zixingJson = null;
     this.myNodes = null;
     this.myEdges = null;
+    this.nowSelectedNode = null;
 
     this.state={
       blnUpdate: false,
       loadIndex: 0,
-      status: cv.LAYER_LOAD,
     };
+    this.status = cv.LAYER_LOAD;
 
     this.relativeX = -ScreenWidth / 2;
     this.relativeY = -ScreenHeight / 2;
@@ -106,8 +96,6 @@ export default class ForceLayout extends Component {
       maxX: 0,
       maxY: 0,
     };
-    this.timeoutCount = 0;
-    this.netState = 0;
     this.client = null;
     this.tempServerData = null;
     global.forceLayout = this;
@@ -119,13 +107,10 @@ export default class ForceLayout extends Component {
     });
     switch(index){
       case 0:
-        this.goujianJson = require('../data/mGoujian.json');
         break;
       case 1:
-        this.goujianGuanxiJson = require('../data/mGoujianGuanxi.json');
         break;
       case 2:
-        this.zixingJson = require('../data/mZixing.json');
         break;
       case 3:
         break;
@@ -169,7 +154,6 @@ export default class ForceLayout extends Component {
   }
   isConnected(){//回调，说明链接成功
     console.log('is connected');
-    this.netState = 1;
   }
   isClosed(e){
     console.log('code:' + e.code, 'reason:' + e.reason);
@@ -232,9 +216,8 @@ export default class ForceLayout extends Component {
               visible={true}/>
           );
         }
-        this.setState({
-          status: cv.LAYER_FORCE,
-        });
+        this.state = cv.LAYER_PLAY;
+        this.updateRender();
       }
     }
   }
@@ -259,83 +242,100 @@ export default class ForceLayout extends Component {
     });
   }
   setSelectNode(event, index, e, g) {
+    console.log(event, index, e, g);
     if (event == cv.NODE_EVENT_START){
-      this.simulation.alphaTarget(0.3).restart();
       this.selectNode = this.myNodes[index];
+      console.log(this.myNodes[index]);
       this.selectLeft = g.dx;
       this.selectTop = g.dy;
-      this.selectNode.fx = this.selectNode.x;
-      this.selectNode.fy = this.selectNode.y;
     }else if (event == cv.NODE_EVENT_MOVE){
-      this.selectNode.fx += (g.dx - this.selectLeft) / this.scaleViewValue;
-      this.selectNode.fy += (g.dy - this.selectTop) / this.scaleViewValue;
       this.selectLeft = g.dx;
       this.selectTop = g.dy;
     }else if (event == cv.NODE_EVENT_END) {
-      this.simulation.alphaTarget(0);
-      this.selectNode.fx = null;
-      this.selectNode.fy = null;
       this.selectNode = null;
     }
   }
   onPressNode(data){
-    console.log('onPress', data.order, data.zxContent); 
+    // console.log('onPress', data.order, data.zxContent);
+    if (this.status == cv.LAYER_PLAY){
+      var index = data.order;
+      if (this.nodeRefs){
+        if (this.nodeRefs[index]){
+          this.nodeRefs[index].setNodeMove({
+            'x': - this.moveViewX - this.relativeX,
+            'y': - this.moveViewY - this.relativeY,
+            'r': ScreenWidth/4 / this.scaleViewValue,
+          }, 500);
+          this.status = cv.LAYER_NODE_MOVE;
+          this.nowSelectedNode = this.nodeRefs[index];
+        }
+      }
+    }else if (this.state.status == cv.LAYER_NODE_STOP){
+      if (this.nowSelectedNode){
+        this.status = cv.LAYER_NODE_MOVE;
+        this.nowSelectedNode.setNodeBack(500);
+      }
+    }
   }
   onStartShouldSetPanResponder(e, g){
-    if (this.state.status == cv.LAYER_LOAD || this.selectNode != null){
+    if (this.status == cv.LAYER_LOAD || this.selectNode != null){
       return false;
     }
     return true;
   }
   onMoveShouldSetPanResponder(e, g){
-    if (this.state.status == cv.LAYER_LOAD || this.selectNode != null){
+    if (this.status == cv.LAYER_LOAD || this.selectNode != null){
       return false;
     }
     return true;
   }
   onPanResponderGrant(e, g){
-    this.touchScale = null;
-    if (g.numberActiveTouches == 2){
-      this.touchScale = Dis(e.nativeEvent.touches[0].pageX - e.nativeEvent.touches[1].pageX, 
-        e.nativeEvent.touches[0].pageY - e.nativeEvent.touches[1].pageY);
+    if (this.status == cv.LAYER_PLAY){
+      this.touchScale = null;
+      if (g.numberActiveTouches == 2){
+        this.touchScale = Dis(e.nativeEvent.touches[0].pageX - e.nativeEvent.touches[1].pageX, 
+          e.nativeEvent.touches[0].pageY - e.nativeEvent.touches[1].pageY);
+      }
     }
   }
   onPanResponderMove(e, g){
-    if (g.numberActiveTouches == 1){
-      var mx = this.moveViewX + g.dx / this.scaleViewValue;
-      var my = this.moveViewY + g.dy / this.scaleViewValue;
-      mx = Math.max(mx, this.nodeSize.minX + ScreenWidth * 1.5);
-      mx = Math.min(mx, this.nodeSize.maxX - ScreenWidth * 1.5);
-      my = Math.max(my, this.nodeSize.minY + ScreenHeight * 0.5);
-      my = Math.min(my, this.nodeSize.maxY - ScreenHeight * 1);
-      if (this.refs.moveView){
-        this.refs.moveView.setNativeProps({
-          style:{
-            left: mx + this.relativeX,
-            top: my + this.relativeY,
-          }
-        });
-        this.moveViewIsMoved = true;
-      }
-      this.touchScale = null;
-    }else if (g.numberActiveTouches == 2){
-      var tempScale = Dis(e.nativeEvent.touches[0].pageX - e.nativeEvent.touches[1].pageX, 
-        e.nativeEvent.touches[0].pageY - e.nativeEvent.touches[1].pageY);
-      if (this.touchScale == null) {
+    if (this.status == cv.LAYER_PLAY){
+      if (g.numberActiveTouches == 1){
+        var mx = this.moveViewX + g.dx / this.scaleViewValue;
+        var my = this.moveViewY + g.dy / this.scaleViewValue;
+        mx = Math.max(mx, this.nodeSize.minX + ScreenWidth * 0);
+        mx = Math.min(mx, this.nodeSize.maxX - ScreenWidth * 0);
+        my = Math.max(my, this.nodeSize.minY + ScreenHeight * 0);
+        my = Math.min(my, this.nodeSize.maxY - ScreenHeight * 0);
+        if (this.refs.moveView){
+          this.refs.moveView.setNativeProps({
+            style:{
+              left: mx + this.relativeX,
+              top: my + this.relativeY,
+            }
+          });
+          this.moveViewIsMoved = true;
+        }
+        this.touchScale = null;
+      }else if (g.numberActiveTouches == 2){
+        var tempScale = Dis(e.nativeEvent.touches[0].pageX - e.nativeEvent.touches[1].pageX, 
+          e.nativeEvent.touches[0].pageY - e.nativeEvent.touches[1].pageY);
+        if (this.touchScale == null) {
+          this.touchScale = tempScale;
+        }
+        this.scaleViewValue += (tempScale - this.touchScale) * 0.002;
+        if (this.scaleViewValue >= 2.0) this.scaleViewValue = 2.0;
+        if (this.scaleViewValue <= 0.1) this.scaleViewValue = 0.1;
         this.touchScale = tempScale;
-      }
-      this.scaleViewValue += (tempScale - this.touchScale) * 0.002;
-      if (this.scaleViewValue >= 2.0) this.scaleViewValue = 2.0;
-      if (this.scaleViewValue <= 0.1) this.scaleViewValue = 0.1;
-      this.touchScale = tempScale;
-      if (this.refs.scaleView){
-        this.refs.scaleView.setNativeProps({
-          style:{
-            transform: [{
-              scale: this.scaleViewValue,
-            }],
-          }
-        });
+        if (this.refs.scaleView){
+          this.refs.scaleView.setNativeProps({
+            style:{
+              transform: [{
+                scale: this.scaleViewValue,
+              }],
+            }
+          });
+        }
       }
     }
   }
@@ -346,19 +346,21 @@ export default class ForceLayout extends Component {
     this.endPanResponder(e, g);
   }
   endPanResponder(e, g){
-    if (this.moveViewIsMoved){
-      this.moveViewX += g.dx / this.scaleViewValue;
-      this.moveViewY += g.dy / this.scaleViewValue;
+    if (this.status == cv.LAYER_PLAY){
+      if (this.moveViewIsMoved){
+        this.moveViewX += g.dx / this.scaleViewValue;
+        this.moveViewY += g.dy / this.scaleViewValue;
 
-      this.moveViewX = Math.max(this.moveViewX, this.nodeSize.minX + ScreenWidth * 1.5);
-      this.moveViewX = Math.min(this.moveViewX, this.nodeSize.maxX - ScreenWidth * 1.5);
-      this.moveViewY = Math.max(this.moveViewY, this.nodeSize.minY + ScreenHeight * 0.5);
-      this.moveViewY = Math.min(this.moveViewY, this.nodeSize.maxY - ScreenHeight * 1);
+        this.moveViewX = Math.max(this.moveViewX, this.nodeSize.minX + ScreenWidth * 0);
+        this.moveViewX = Math.min(this.moveViewX, this.nodeSize.maxX - ScreenWidth * 0);
+        this.moveViewY = Math.max(this.moveViewY, this.nodeSize.minY + ScreenHeight * 0);
+        this.moveViewY = Math.min(this.moveViewY, this.nodeSize.maxY - ScreenHeight * 0);
 
-      this.moveViewIsMoved = false;
-      // console.log(this.moveViewX, this.moveViewY, this.scaleViewValue, this.nodeSize);
+        this.moveViewIsMoved = false;
+        // console.log(this.moveViewX, this.moveViewY, this.scaleViewValue, this.nodeSize);
+      }
+      this.touchScale = null;
     }
-    this.touchScale = null;
   }
   componentDidMount(){
   }
@@ -367,9 +369,6 @@ export default class ForceLayout extends Component {
     this.firstTimeout && clearTimeout(this.firstTimeout);
     global.forceLayout = null;
   }
-  getStatus(){
-    return this.state.status;
-  }
   updateRender(){
     this.setState({
       blnUpdate: !this.state.blnUpdate,
@@ -377,44 +376,7 @@ export default class ForceLayout extends Component {
   }
   
   render() {
-    // return(
-    //   <View style={{flex:1}}>
-    //     <View style={{
-    //       position: 'absolute',
-    //       left: 100,
-    //       top: 100,
-    //       backgroundColor: 'rgb(255,255,0)',
-    //       width: 100,
-    //       height: 100,
-    //       transform: [
-    //         {rotateZ: '0'}
-    //       ]
-    //     }} />
-    //     <View style={{
-    //       position: 'absolute',
-    //       left: 100,
-    //       top: 100,
-    //       backgroundColor: 'rgb(0,255,0)',
-    //       width: 100,
-    //       height: 100,
-    //       transform: [
-    //         {rotateZ: '45'}
-    //       ]
-    //     }} />
-    //     <View style={{
-    //       position: 'absolute',
-    //       left: 100,
-    //       top: 100,
-    //       backgroundColor: 'rgb(255,0,255)',
-    //       width: 100,
-    //       height: 1,
-    //       transform: [
-    //         {rotateZ: '30'}
-    //       ]
-    //     }} />
-    //   </View>
-    // );
-    if (this.state.status == cv.LAYER_LOAD){
+    if (this.status == cv.LAYER_LOAD){
       return (
         <View style={styles.loadView}>
           <View style={[styles.loadback]}>
@@ -424,7 +386,7 @@ export default class ForceLayout extends Component {
       );
     }else {
       return (
-        <View style={styles.container} {...this._panResponder.panHandlers} pointerEvents={'box-only'}>
+        <View style={styles.container} {...this._panResponder.panHandlers}>
           <View ref={'scaleView'} style={this.scaleViewStyle} >
             <View ref={'moveView'} style={this.moveViewStyle} >
               {this.drawLink()}

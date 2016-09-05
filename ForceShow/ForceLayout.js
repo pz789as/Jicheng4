@@ -79,8 +79,8 @@ export default class ForceLayout extends Component {
     this.state={
       blnUpdate: false,
       loadIndex: 0,
-      status: cv.LAYER_LOAD,
     };
+    this.status = cv.LAYER_LOAD;
 
     this.moveViewIsMoved = false;
     this.moveViewX = 0;
@@ -142,9 +142,8 @@ export default class ForceLayout extends Component {
     }
   }
   firstStart(){
-    this.setState({
-      status: cv.LAYER_FORCE,
-    });
+    this.status = cv.LAYER_FORCE;
+    this.updateRender();
     this.lvIndex = 0;
     this.startForce();
   }
@@ -473,13 +472,13 @@ export default class ForceLayout extends Component {
     console.log('onPress', data.order, data.zxContent); 
   }
   onStartShouldSetPanResponder(e, g){
-    if (this.state.status == cv.LAYER_LOAD || this.selectNode != null){
+    if (this.status == cv.LAYER_LOAD || this.selectNode != null){
       return false;
     }
     return true;
   }
   onMoveShouldSetPanResponder(e, g){
-    if (this.state.status == cv.LAYER_LOAD || this.selectNode != null){
+    if (this.status == cv.LAYER_LOAD || this.selectNode != null){
       return false;
     }
     return true;
@@ -590,9 +589,6 @@ export default class ForceLayout extends Component {
     this.firstTimeout && clearTimeout(this.firstTimeout);
     global.forceLayout = null;
   }
-  getStatus(){
-    return this.state.status;
-  }
   ticked(){
     console.log('ticked time: ' + ((new Date()).getTime() - this.tickedTime));
     this.tickedTime = new Date().getTime();
@@ -657,7 +653,7 @@ export default class ForceLayout extends Component {
   }
   
   render() {
-    if (this.state.status == cv.LAYER_LOAD){
+    if (this.status == cv.LAYER_LOAD){
       return (
         <View style={styles.loadView}>
           <View style={[styles.loadback]}>
