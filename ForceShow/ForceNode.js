@@ -45,6 +45,7 @@ export default class ForceNode extends Component {
     this.fontColor = 'rgb(0,0,255)';
     this.initTextStyle = {
       color: this.fontColor,
+      width: this.data.radius * 2 * 0.75 * 3,
       fontSize: this.data.radius * 2 * 0.75,
       textAlign: 'center',
       backgroundColor: '#0000',
@@ -169,17 +170,17 @@ export default class ForceNode extends Component {
   }
   render() {
     if (this.state.visible){
+      var text = this.text;
       // return (
       //   <View ref={'body'} style={this.initNodeStyle}
       //     {...this._panResponder.panHandlers}>
       //     <Text style={this.initTextStyle}>{this.text}</Text>
       //   </View>
       // );
-
       return (
         <View ref={'body'} style={this.initNodeStyle}>
           <Text style={this.initTextStyle} onPress={this.TouchNode.bind(this)}>
-            {this.text}
+            {text}
           </Text>
         </View>
       );

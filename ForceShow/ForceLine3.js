@@ -21,6 +21,7 @@ import {
 import Dimensions from 'Dimensions';
 let ScreenWidth = Dimensions.get('window').width;
 let ScreenHeight = Dimensions.get('window').height;
+let stroke  = 2;
 
 export default class ForceLine extends Component {
   constructor(props){
@@ -44,7 +45,7 @@ export default class ForceLine extends Component {
       top: this.y,
       backgroundColor: this.color,
       width: Math.max(1, this.width),
-      height: 1,
+      height: stroke,
       transform: [
         {rotateZ: '' + this.rotate}
       ]
@@ -78,7 +79,7 @@ export default class ForceLine extends Component {
   updateInfo(){
     this.width = Dis(this.x1 - this.x2, this.y1 - this.y2);
     this.x = (this.x1 + this.x2) / 2 - this.width / 2;
-    this.y = (this.y1 + this.y2) / 2 + 0.5;
+    this.y = (this.y1 + this.y2) / 2 + stroke / 2;
     this.rotate = Math.atan((this.y2 - this.y1) / (this.x2 - this.x1)) * 180 / Math.PI;
   }
   selfSet(){
@@ -87,6 +88,7 @@ export default class ForceLine extends Component {
     this.x2 = this.edge.target.x;
     this.y2 = this.edge.target.y;
     this.color = this.edge.color;
+    this.updateInfo();
     if (this.state.visible){
       this.updateRender();
     }
@@ -97,8 +99,8 @@ export default class ForceLine extends Component {
     this.y1 = y1;
     this.x2 = x2;
     this.y2 = y2;
+    this.updateInfo();
     if (this.state.visible){
-      this.updateInfo();
       if (this.refs.body){
         this.refs.body.setNativeProps({
           style:{
@@ -132,7 +134,7 @@ export default class ForceLine extends Component {
   render() {
     if (this.state.visible){
       return (
-        <View ref={'body'} style={this.bodyStyle}/>
+         <View ref={'body'} style={this.bodyStyle}/>
       );
     }else{
       return (

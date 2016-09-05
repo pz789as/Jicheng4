@@ -151,32 +151,41 @@ export default class ForceLayout extends Component {
     return -1;
   }
   connectServer(){
-    this.tempServerData = null;
-    this.client = net.createConnection({host:'192.168.1.111', port:8888}, this.isConnected.bind(this));
-    this.client.on('error', function(error){
-      console.log('error:', error);
-    });
-    this.client.setTimeout(30000, ()=>{
-      console.log('connect timeout');
-      this.timeoutCount++;
-      if (this.timeoutCount >= 3){
-        this.netState = 0;
-        this.client = null;
-        this.timeoutCount = 0;
-        Alert.alert(
-          'Alert',
-          '网络错误，请稍后再试！',
-          [
-            {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-            {text: 'OK', onPress: () => console.log('OK Pressed!')},
-          ]
-        );
-      }else{
-        this.connectServer();
-      }
-    });
+    this.client = new WebSocket('http://192.168.1.111:8888');
+    this.client.onopen = this.isConnected.bind(this);
+    this.client.onerror = (e) =>{
+      console.log('error:', e.message);
+      Alert.alert(
+        'Alert',
+        '网络错误，请稍后再试！' + e.message,
+        [
+          {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+          {text: 'OK', onPress: () => console.log('OK Pressed!')},
+        ]
+      );
+    };
+    this.client.onclose = this.isClosed.bind(this);
+    this.client.onmessage = this.getDataFromServer.bind(this);
   }
-  getDataFromServer(data){
+  isConnected(){//回调，说明链接成功
+    console.log('is connected');
+    this.netState = 1;
+  }
+  isClosed(e){
+    console.log('code:' + e.code, 'reason:' + e.reason);
+    if (e.code == 1001){//中途服务器出问题而关闭
+      Alert.alert(
+        'Alert',
+        '网络错误，请稍后再试！' + e.reason,
+        [
+          {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+          {text: 'OK', onPress: () => console.log('OK Pressed!')},
+        ]
+      );
+    }
+  }
+  getDataFromServer(e){
+    var data = e.data;
     var serverData = data.toString();
     console.log(serverData.length);
     if (this.tempServerData == null){
@@ -237,26 +246,6 @@ export default class ForceLayout extends Component {
     }
     console.log('通过zxKey查找node出错', zxKey);
     return -1;
-  }
-  isConnected(){//回调，说明链接成功
-    console.log('is connected');
-    this.netState = 1;
-    this.client.on('data', this.getDataFromServer.bind(this));
-    this.client.on('close', this.isClosed.bind(this));
-  }
-  isClosed(close){
-    console.log('close', close);//返回true 说明服务器没有开启，false说明服务器中途关闭了
-    this.netState = 0;
-    if (close == false){//中途服务器出问题而关闭
-      Alert.alert(
-        'Alert',
-        '网络错误，请稍后再试！',
-        [
-          {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-          {text: 'OK', onPress: () => console.log('OK Pressed!')},
-        ]
-      );
-    }
   }
   componentWillMount(){
     this.loading(0);
