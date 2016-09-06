@@ -21,11 +21,6 @@
   return self;
 }
 
-//- (void)setRectBackgroundColor:(UIColor *)backgroundColor
-//{
-//  self.backgroundColor = backgroundColor;
-//}
-
 -(void)layoutSubviews
 {
   [super layoutSubviews];
@@ -39,42 +34,18 @@
   [self.layer setNeedsDisplay];
 }
 
--(void) setAnchorPoint:(CGPoint)anchorPoint forView:(UIView*)view
-{
-  CGPoint oldOrigin = view.frame.origin;
-  view.layer.anchorPoint = anchorPoint;
-  CGPoint newOrigin = view.frame.origin;
-  CGPoint transition;
-  transition.x = newOrigin.x - oldOrigin.x;
-  transition.y = newOrigin.y - oldOrigin.y;
-  view.center = CGPointMake(view.center.x - transition.x, view.center.y - transition.y);
-}
-
 -(void)drawRect:(CGRect)rect
 {
-  //An opaque type that represents a Quartz 2D drawing environment.
-  //一个不透明类型的Quartz 2D绘画环境,相当于一个画布,你可以在上面任意绘画
   CGContextRef context = UIGraphicsGetCurrentContext();
-//  NSLog(@"%f, %f", self.center.x, self.center.y);
+  CGContextTranslateCTM(context, self.frame.size.width/2, self.frame.size.height/2);
   CGContextScaleCTM(context, _scaleValue.x, _scaleValue.y);
   CGContextTranslateCTM(context, _transPos.x, _transPos.y);
-  
-//  CALayer* subLayer = [CALayer layer];
-//  subLayer.frame = self.layer.bounds;
-////  subLayer.frame = CGRectMake(10, 10, 100, 200);
-//  subLayer.backgroundColor = [UIColor yellowColor].CGColor;
-//  [self.layer insertSublayer:subLayer atIndex:0];
-//  [self.layer renderInContext:context];
   
   if (!CGRectIsEmpty(self.clipping)) {
     CGContextClipToRect(context, self.clipping);
   }
   UIColor * color;
   NSArray * orderKey = [RCTConvert NSArray:_drawData[@"order"]];
-//  NSLog(@"%@", orderKey);
-//  for (NSString *key in orderKey){
-//    NSLog(@"%@", key);
-//  }
   for (NSString *key in orderKey) {
     NSArray* array = [RCTConvert NSArray:_drawData[key]];
     if ([key containsString:@"lines"]){

@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -25,9 +26,11 @@
 		31D4765BAF7A44FB80FA331B /* Arial Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E580F7CCBE5544CA899D10F9 /* Arial Black.ttf */; };
 		3AE70B14D8D144FBA0D80131 /* SF-UI-Text-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = AEF4A56FE50B488DABE27840 /* SF-UI-Text-Regular.otf */; };
 		445B9F0353B7498E832AD597 /* Microsoft Sans Serif.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9CC7B4F126AE444C89CA49E9 /* Microsoft Sans Serif.ttf */; };
+		46F09CF8F2B2441DAD0F70A2 /* libTcpSockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9AB5959DB6E45508D8D14DF /* libTcpSockets.a */; };
 		7CFB7693820A46748888373B /* Comic Sans MS.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 71C2B6115780403389D6818F /* Comic Sans MS.ttf */; };
 		82CD8DBBEE534B47B1DDC810 /* Times New Roman.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A078C382C064E1D9C41CA49 /* Times New Roman.ttf */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		904082A21D7E5E4400B1FAAF /* SubDrawView.m in Sources */ = {isa = PBXBuildFile; fileRef = 904082A11D7E5E4400B1FAAF /* SubDrawView.m */; };
 		90A9B5B41D5D6AE800D1FD64 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90A9B5B31D5D6AE800D1FD64 /* QuartzCore.framework */; };
 		90A9B5B61D5D6AEF00D1FD64 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90A9B5B51D5D6AEF00D1FD64 /* UIKit.framework */; };
 		90D933A01D73D3AE005FD111 /* DrawView.m in Sources */ = {isa = PBXBuildFile; fileRef = 90D9339B1D73D3AE005FD111 /* DrawView.m */; };
@@ -41,7 +44,6 @@
 		F21BEBCE4290410C8C69B0DF /* Courier New.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FCF81C0D49A7492D9CB05213 /* Courier New.ttf */; };
 		F8F2E83900344C26B4EFCBA3 /* Roboto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8864EF10F777477B8F11710F /* Roboto.ttf */; };
 		F970A3B7AF6C48598FC916D6 /* Skia.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C4C404C1AB5346C4BA9DE1B6 /* Skia.ttf */; };
-		46F09CF8F2B2441DAD0F70A2 /* libTcpSockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9AB5959DB6E45508D8D14DF /* libTcpSockets.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -129,6 +131,13 @@
 			remoteGlobalIDString = 0CF68AC11AF0540F00FF9E5C;
 			remoteInfo = RNSVG;
 		};
+		904082811D7E46BA00B1FAAF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 92A42C4471B54672A6A75A7C /* TcpSockets.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = TcpSockets;
+		};
 		906E244F1D5B009000333617 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 906E244B1D5B009000333617 /* ART.xcodeproj */;
@@ -169,6 +178,8 @@
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		8864EF10F777477B8F11710F /* Roboto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Roboto.ttf; path = "../node_modules/native-base/Fonts/Roboto.ttf"; sourceTree = "<group>"; };
+		904082A01D7E5E4400B1FAAF /* SubDrawView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SubDrawView.h; path = Jicheng4/SubDrawView.h; sourceTree = "<group>"; };
+		904082A11D7E5E4400B1FAAF /* SubDrawView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SubDrawView.m; path = Jicheng4/SubDrawView.m; sourceTree = "<group>"; };
 		906E244B1D5B009000333617 /* ART.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ART.xcodeproj; path = "../node_modules/react-native/Libraries/ART/ART.xcodeproj"; sourceTree = "<group>"; };
 		90A9B5B31D5D6AE800D1FD64 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		90A9B5B51D5D6AEF00D1FD64 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -178,13 +189,13 @@
 		90D9339D1D73D3AE005FD111 /* RCTDrawView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTDrawView.m; path = Jicheng4/RCTDrawView.m; sourceTree = "<group>"; };
 		90D9339E1D73D3AE005FD111 /* RCTDrawViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTDrawViewManager.h; path = Jicheng4/RCTDrawViewManager.h; sourceTree = "<group>"; };
 		90D9339F1D73D3AE005FD111 /* RCTDrawViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTDrawViewManager.m; path = Jicheng4/RCTDrawViewManager.m; sourceTree = "<group>"; };
+		92A42C4471B54672A6A75A7C /* TcpSockets.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = TcpSockets.xcodeproj; path = "../node_modules/react-native-tcp/ios/TcpSockets.xcodeproj"; sourceTree = "<group>"; };
 		9CC7B4F126AE444C89CA49E9 /* Microsoft Sans Serif.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Microsoft Sans Serif.ttf"; path = "../node_modules/native-base/Fonts/Microsoft Sans Serif.ttf"; sourceTree = "<group>"; };
+		A9AB5959DB6E45508D8D14DF /* libTcpSockets.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libTcpSockets.a; sourceTree = "<group>"; };
 		AEF4A56FE50B488DABE27840 /* SF-UI-Text-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-UI-Text-Regular.otf"; path = "../node_modules/native-base/Fonts/SF-UI-Text-Regular.otf"; sourceTree = "<group>"; };
 		C4C404C1AB5346C4BA9DE1B6 /* Skia.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Skia.ttf; path = "../node_modules/native-base/Fonts/Skia.ttf"; sourceTree = "<group>"; };
 		E580F7CCBE5544CA899D10F9 /* Arial Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Arial Black.ttf"; path = "../node_modules/native-base/Fonts/Arial Black.ttf"; sourceTree = "<group>"; };
 		FCF81C0D49A7492D9CB05213 /* Courier New.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Courier New.ttf"; path = "../node_modules/native-base/Fonts/Courier New.ttf"; sourceTree = "<group>"; };
-		92A42C4471B54672A6A75A7C /* TcpSockets.xcodeproj */ = {isa = PBXFileReference; name = "TcpSockets.xcodeproj"; path = "../node_modules/react-native-tcp/ios/TcpSockets.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		A9AB5959DB6E45508D8D14DF /* libTcpSockets.a */ = {isa = PBXFileReference; name = "libTcpSockets.a"; path = "libTcpSockets.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -404,6 +415,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		904082721D7E46BA00B1FAAF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				904082821D7E46BA00B1FAAF /* libTcpSockets.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		906E244C1D5B009000333617 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -415,6 +434,8 @@
 		90D9338D1D73D38F005FD111 /* DrawView */ = {
 			isa = PBXGroup;
 			children = (
+				904082A01D7E5E4400B1FAAF /* SubDrawView.h */,
+				904082A11D7E5E4400B1FAAF /* SubDrawView.m */,
 				90D9339A1D73D3AE005FD111 /* DrawView.h */,
 				90D9339B1D73D3AE005FD111 /* DrawView.m */,
 				90D9339C1D73D3AE005FD111 /* RCTDrawView.h */,
@@ -542,6 +563,10 @@
 					ProductGroup = 903CF1371D5BFCDB0022A2BA /* Products */;
 					ProjectRef = 2411A2B152A348B5AE20DA51 /* RNSVG.xcodeproj */;
 				},
+				{
+					ProductGroup = 904082721D7E46BA00B1FAAF /* Products */;
+					ProjectRef = 92A42C4471B54672A6A75A7C /* TcpSockets.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -629,6 +654,13 @@
 			remoteRef = 903CF1451D5BFCDB0022A2BA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		904082821D7E46BA00B1FAAF /* libTcpSockets.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTcpSockets.a;
+			remoteRef = 904082811D7E46BA00B1FAAF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		906E24501D5B009000333617 /* libART.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -702,6 +734,7 @@
 				90D933A21D73D3AE005FD111 /* RCTDrawViewManager.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				904082A21D7E5E4400B1FAAF /* SubDrawView.m in Sources */,
 				90D933A01D73D3AE005FD111 /* DrawView.m in Sources */,
 				90D933A11D73D3AE005FD111 /* RCTDrawView.m in Sources */,
 			);

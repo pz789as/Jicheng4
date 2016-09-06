@@ -15,8 +15,7 @@ import {
 import TestD3 from './TestD3';
 import TestArt from './TestArt';
 import ArtLayout from './ArtLayout';
-// import ForceLayout from './ForceLayout';
-import ForceLayout from './ForceShow/ForceLayout4';
+import ForceLayout from './ForceShow/ForceLayout';
 import TestNet from './TestNet';
 
 var test = false;

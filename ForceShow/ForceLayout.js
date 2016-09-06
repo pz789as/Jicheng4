@@ -86,15 +86,6 @@ export default class ForceLayout extends Component {
     this.moveViewX = 0;
     this.moveViewY = 0;
     this.scaleViewValue = 1;
-    this.scaleViewStyle = {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      transform: [{
-        scale: this.scaleViewValue,
-      }]
-    };
-    this.setRelativePos();
     this.nodeSize={
       minX: 0,
       minY: 0,
@@ -519,47 +510,17 @@ export default class ForceLayout extends Component {
       if (this.scaleViewValue >= 2.5) this.scaleViewValue = 2.5;
       if (this.scaleViewValue <= 0.1) this.scaleViewValue = 0.1;
       // console.log('now Scale: ' + this.scaleViewValue);
-      this.setRelativePos();
       this.touchScale = tempScale;
       if (this.refs.drawView){
         this.refs.drawView.setNativeProps({
-          // scaleValue: {
-          //   x: this.scaleViewValue,
-          //   y: this.scaleViewValue,
-          // },
-          // transPos: {
-          //   x: this.moveViewX + this.relativeX,
-          //   y: this.moveViewY + this.relativeY,
-          // },
-          style: {
-            width: ScreenWidth / this.scaleViewValue,
-            height: ScreenHeight / this.scaleViewValue,
-          }
-        });
-      }
-      if (this.refs.scaleView){
-        this.refs.scaleView.setNativeProps({
-          style:{
-            transform: [{
-              scale: this.scaleViewValue,
-            }],
-          }
+          scaleValue: {
+            x: this.scaleViewValue,
+            y: this.scaleViewValue,
+          },
         });
       }
     }
     console.log('relativeX:' + this.relativeX, 'relativeY:' + this.relativeY, 'scaleViewValue:' + this.scaleViewValue);
-  }
-  setRelativePos(){
-    var temp = 0;
-    // if (this.scaleViewValue < 1){
-    //   temp = this.scaleViewValue;
-    // }else if (this.scaleViewValue > 1) {
-    //   temp = 1 - this.scaleViewValue;
-    // }else{
-    //   temp = 0;
-    // }
-    this.relativeX = 0;//ScreenWidth / 2 + ScreenWidth * temp / 2;
-    this.relativeY = 0;//ScreenHeight / 2 + ScreenHeight * temp / 2;
   }
   onPanResponderRelease(e, g){
     this.endPanResponder(e, g);
@@ -665,7 +626,6 @@ export default class ForceLayout extends Component {
       // console.log(ScreenWidth / this.scaleViewValue);
       return (
         <View style={styles.container} {...this._panResponder.panHandlers} pointerEvents={'box-only'}>
-          <View ref={'scaleView'} style={this.scaleViewStyle} >
             <DrawView style={{
               width: parseInt(ScreenWidth), 
               height: parseInt(ScreenHeight), 
@@ -675,7 +635,6 @@ export default class ForceLayout extends Component {
               scaleValue={{x:this.scaleViewValue, y:this.scaleViewValue}}
               drawData={this.drawData}
               ref={'drawView'} />
-          </View>
         </View>
       );
     }

@@ -216,7 +216,7 @@ export default class ForceLayout extends Component {
               visible={true}/>
           );
         }
-        this.state = cv.LAYER_PLAY;
+        this.status = cv.LAYER_PLAY;
         this.updateRender();
       }
     }
@@ -270,7 +270,7 @@ export default class ForceLayout extends Component {
           this.nowSelectedNode = this.nodeRefs[index];
         }
       }
-    }else if (this.state.status == cv.LAYER_NODE_STOP){
+    }else if (this.status == cv.LAYER_NODE_STOP){
       if (this.nowSelectedNode){
         this.status = cv.LAYER_NODE_MOVE;
         this.nowSelectedNode.setNodeBack(500);
