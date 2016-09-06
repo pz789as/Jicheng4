@@ -401,9 +401,9 @@ export default class ForceLayout extends Component {
         return d.myWeight * FORCE_DATA[lvi].charge;
       }
     }))
-    .force('center', d3.forceCenter(ScreenWidth/2, ScreenHeight/2))
-    .force('fx', d3.forceX().strength(FORCE_DATA[lvi].gravity).x(ScreenWidth/2))
-    .force('fy', d3.forceY().strength(FORCE_DATA[lvi].gravity).y(ScreenHeight/2))
+    .force('center', d3.forceCenter(0, 0))
+    .force('fx', d3.forceX().strength(FORCE_DATA[lvi].gravity).x(0))
+    .force('fy', d3.forceY().strength(FORCE_DATA[lvi].gravity).y(0))
     .alphaMin(0.005);
 
     this.simulation.nodes(this.lvNodes[lvi])
@@ -493,8 +493,8 @@ export default class ForceLayout extends Component {
       if (this.refs.drawView){
         this.refs.drawView.setNativeProps({
           transPos: {
-            x: mx + this.relativeX,
-            y: my + this.relativeY,
+            x: mx,
+            y: my,
           }
         });
         this.moveViewIsMoved = true;
@@ -520,7 +520,6 @@ export default class ForceLayout extends Component {
         });
       }
     }
-    console.log('relativeX:' + this.relativeX, 'relativeY:' + this.relativeY, 'scaleViewValue:' + this.scaleViewValue);
   }
   onPanResponderRelease(e, g){
     this.endPanResponder(e, g);
@@ -564,8 +563,6 @@ export default class ForceLayout extends Component {
     if (this.lvIndex + 1 >= this.lvNodes.length){
       //当所有节点运动完毕之后，将线显示出来
       this.setEdgeVisible(null, true);
-      // this.setDrawData();
-      // this.updateRender();
       console.log('all node is add.');
     }else{
       this.lvIndex++;
