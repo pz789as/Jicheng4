@@ -98,6 +98,7 @@ export default class ForceLayout extends Component {
     };
     this.client = null;
     this.tempServerData = null;
+    this._nodeMoveControll = setInterval(this.onNodeMoveControll.bind(this), 100);
     global.forceLayout = this;
     console.log(ScreenWidth, ScreenHeight);
   }
@@ -277,6 +278,9 @@ export default class ForceLayout extends Component {
       }
     }
   }
+  onNodeMoveControll(){
+    // for()
+  }
   onStartShouldSetPanResponder(e, g){
     if (this.status == cv.LAYER_LOAD || this.selectNode != null){
       return false;
@@ -367,6 +371,7 @@ export default class ForceLayout extends Component {
   componentWillUnmount(){
     this.loadTimeout && clearTimeout(this.loadTimeout);
     this.firstTimeout && clearTimeout(this.firstTimeout);
+    this._nodeMoveControll && clearInterval(this._nodeMoveControll);
     global.forceLayout = null;
   }
   updateRender(){

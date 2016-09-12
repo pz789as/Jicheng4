@@ -10,16 +10,19 @@ let cv = {
   LAYER_PLAY: 2,
   LAYER_NODE_MOVE: 3,
   LAYER_NODE_STOP: 4,
+  LAYER_NODE_BACK: 5,
 
   NODE_PLAY: 0,
   NODE_MOVE: 1,
   NODE_BACK: 2,
   NODE_MOVE_OVER: 3,
-  NODE_BACK_OVER: 4,
 
   NODE_EVENT_START: 0,
   NODE_EVENT_MOVE: 1,
   NODE_EVENT_END: 2,
+
+  MOVE_CENTER: 1,
+  MOVE_BACK: 2,
 };
 
 var FORCE_DATA = [//number是权重或者说是构字数量，linkDis是距离，gravity是向中间靠拢的引力，charge是每个节点之间的排斥力，出了第一行后面的几行linkDis都是有计算公式
