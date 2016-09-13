@@ -22,6 +22,11 @@ var test = false;
 class Jicheng4 extends Component {
   constructor(props){
     super(props);
+    console.log(Math.tan(45*Math.PI/180));
+    console.log(Math.atan(1)*180/Math.PI);
+    console.log(Math.atan2(1, 1)*180/Math.PI);
+    console.log(Math.cos(45*Math.PI/180));
+    console.log(Math.sin(Math.atan2(1, 1)));
   }
   render() {
     if (test == false){

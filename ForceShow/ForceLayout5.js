@@ -513,6 +513,38 @@ export default class ForceLayout extends Component {
     }
   }
   setNodeMoveStart(){
+    var selx = this.getATransValue(this.nowSelectedNode.x, 'x');
+    var sely = this.getATransValue(this.nowSelectedNode.y, 'y');
+    var baseR = Math.sqrt(ScreenHeight*ScreenHeight + ScreenWidth*ScreenWidth)/2;
+    var node, edge, mr, angle;
+
+    if (this.oldSelectedNode){
+      node = this.oldSelectedNode;
+      angle = Math.atan2(node.y-this.nowSelectedNode.y, node.x-this.nowSelectedNode.x);
+      mr = baseR + node.orgR*this.scaleViewValue
+      node.oldX = node.x;
+      node.oldY = node.y;
+      node.oldR = node.radius;
+      node.newX = this.getTransValue(Math.cos(angle) * mr + ScreenWidth/2, 'x');
+      node.newY = this.getTransValue(Math.sin(angle) * mr + ScreenHeight/2, 'y');
+      node.newR = node.orgR;
+      node.status = cv.NODE_MOVE;
+      for(var i=0;i<this.myEdges.length;i++){
+        edge = this.myEdges[i];
+        if (edge.source == this.oldSelectedNode || edge.target == this.oldSelectedNode){
+          node = edge.source == this.oldSelectedNode ? edge.target : edge.source;
+          angle = Math.atan2(node.y-this.nowSelectedNode.y, node.x-this.nowSelectedNode.x);
+          mr = baseR + node.orgR*this.scaleViewValue
+          node.oldX = node.x;
+          node.oldY = node.y;
+          node.oldR = node.radius;
+          node.newX = this.getTransValue(Math.cos(angle) * mr + ScreenWidth/2, 'x');
+          node.newY = this.getTransValue(Math.sin(angle) * mr + ScreenHeight/2, 'y');
+          node.newR = node.orgR;
+          node.status = cv.NODE_MOVE;
+        }
+      }
+    }
     this.nowSelectedNode.status = cv.NODE_MOVE;
     this.nowSelectedNode.oldX = this.nowSelectedNode.x;
     this.nowSelectedNode.oldY = this.nowSelectedNode.y;
@@ -527,7 +559,8 @@ export default class ForceLayout extends Component {
     var py = (ScreenHeight/2 - ScreenWidth/4 - dx) ;
     var sx = 0, d = dx - 4;
     for(var i=0;i<this.myEdges.length;i++){
-      var edge = this.myEdges[i];
+      edge = this.myEdges[i];
+      edge.visible = true;
       if (edge.source == this.nowSelectedNode){
         edge.target.oldX = edge.target.x;
         edge.target.oldY = edge.target.y;
@@ -555,19 +588,20 @@ export default class ForceLayout extends Component {
       }
     }
     for(var i=0;i<this.myNodes.length;i++){
-      var node = this.myNodes[i];
+      node = this.myNodes[i];
       if (node.status == cv.NODE_PLAY){
         var x = this.getATransValue(node.x, 'x');
         var y = this.getATransValue(node.y, 'y');
         var r = node.radius * this.scaleViewValue;
         if ((x+r >= 0 && x-r <= ScreenWidth) || (y+r >= 0 && y-r <= ScreenHeight)){
-          var angle = Math.atan2(y-this.nowSelectedNode.y, x-this.nowSelectedNode.x);
+          angle = Math.atan2(node.y-this.nowSelectedNode.y, node.x-this.nowSelectedNode.x);
+          mr = baseR + node.radius*this.scaleViewValue
           node.oldX = node.x;
           node.oldY = node.y;
           node.oldR = node.radius;
-          node.newX = this.getTransValue(Math.cos(angle) * ScreenWidth/2, 'x') + this.nowSelectedNode.x;
-          node.newY = this.getTransValue(Math.sin(angle) * ScreenWidth/2, 'y') + this.nowSelectedNode.y;
-          node.newR = d/2 / this.scaleViewValue;
+          node.newX = this.getTransValue(Math.cos(angle) * mr + ScreenWidth/2, 'x');
+          node.newY = this.getTransValue(Math.sin(angle) * mr + ScreenHeight/2, 'y');
+          node.newR = node.radius;
           node.status = cv.NODE_MOVE;
         }
       }
